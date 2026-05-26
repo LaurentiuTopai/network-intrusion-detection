@@ -18,18 +18,18 @@ This repository contains the complete implementation of a Network Intrusion Dete
 
 The system utilizes the **NSL-KDD** dataset (hosted on Kaggle). Because the original files do not contain a header, the columns were mapped manually to ensure correct processing.
 
-![FormatDate](FormatDate.png)
+![FormatDate](Proiect_SI_NN/FormatDate.png)
 *Figure 1: Visualization of the detected files and the first rows of the dataset.*
 
 A crucial step was understanding the class distribution. The NSL-KDD dataset is known for its major class imbalance, with a predominance of `normal` traffic and `neptune` attacks.
 
-![Labels](Labels.png)
+![Labels](Proiect_SI_NN/Labels.png)
 *Figure 2: List of identified classes and the number of records.*
 
-![DistributieClase](DistributieClase.png)
+![DistributieClase](Proiect_SI_NN/DistributieClase.png)
 *Figure 3: Class distribution - top 15 absolute traffic and percentage distribution.*
 
-![DateDeAntrenare](DateDeAntrenare.png)
+![DateDeAntrenare](Proiect_SI_NN/DateDeAntrenare.png)
 *Figure 4: Descriptive statistics of the raw dataset.*
 
 ---
@@ -42,17 +42,17 @@ To obtain an accurate model, the raw data was cleaned by:
 * Encoding categorical features (`protocol_type`, `service`, `flag`) using `LabelEncoder`.
 * Removing classes with fewer than 10 examples to allow for a stratified split (Train/Test split).
 
-![Preprocessare1](Preprocessare1.png)
+![Preprocessare1](Proiect_SI_NN/Preprocessare1.png)
 *Figure 5: Results of the data cleaning process.*
 
 ### Undersampling and Data Splitting
 To prevent the network from only recognizing the majority classes, **Undersampling** (`RandomUnderSampler`) was applied, limiting the maximum number of records to 50,000 per class.
 The dataset was split into **70% Training, 15% Validation, 15% Testing**, and the features were normalized using `StandardScaler`.
 
-![featureSampling](featureSampling.png)
+![featureSampling](Proiect_SI_NN/featureSampling.png)
 *Figure 6: The new class distribution following the Undersampling process.*
 
-![train](train.png)
+![train](Proiect_SI_NN/train.png)
 *Figure 7: Size of the training, validation, and testing subsets.*
 
 ---
@@ -62,15 +62,15 @@ The dataset was split into **70% Training, 15% Validation, 15% Testing**, and th
 A **Multi-Layer Perceptron (MLP)** network was implemented using the PyTorch framework.
 **Initial Architecture:** `Input -> 256 -> BatchNorm -> Dropout(0.3) -> 128 -> BatchNorm -> Dropout(0.3) -> 64 -> Num_Classes`.
 
-![MLP_SetariDeBaza](MLP_SetariDeBaza.png)
+![MLP_SetariDeBaza](Proiect_SI_NN/MLP_SetariDeBaza.png)
 *Figure 8: MLP model architecture and total number of parameters.*
 
 The model was trained for 30 epochs with a Learning Rate of `0.001`, using a loop that validates and automatically saves the best model (`best_state`) based on the validation set accuracy.
 
-![TrainingEpoch_SetariDeBaza](TrainingEpoch_SetariDeBaza.png)
+![TrainingEpoch_SetariDeBaza](Proiect_SI_NN/TrainingEpoch_SetariDeBaza.png)
 *Figure 9: Training loop history displayed in the console.*
 
-![MLP_Curbe](MLP_Curbe.png)
+![MLP_Curbe](Proiect_SI_NN/MLP_Curbe.png)
 *Figure 10: Training curve graphs (Loss and Accuracy) across epochs.*
 
 ---
@@ -79,9 +79,9 @@ The model was trained for 30 epochs with a Learning Rate of `0.001`, using a loo
 
 The final performance was evaluated on the test set (completely unseen data for the network), achieving an excellent score and precise classification of various types of attacks.
 
-![TestResults](TestResults.png)
+![TestResults](Proiect_SI_NN/TestResults.png)
 
-![ConfusionMatrix](ConfusionMatrix.png)
+![ConfusionMatrix](Proiect_SI_NN/ConfusionMatrix.png)
 *Figure 11: Classification report (top) and Confusion Matrix (bottom) indicating where the model made errors.*
 
 ---
@@ -90,7 +90,7 @@ The final performance was evaluated on the test set (completely unseen data for 
 
 A custom function was created to simulate a **real-time inference system**. The script takes the raw features of a network flow, scales them automatically, and predicts the traffic type, providing the confidence level and the top 3 probabilities.
 
-![Interfata](Interfata.png)
+![Interfata](Proiect_SI_NN/Interfata.png)
 *Figure 12: Prediction simulation using the custom inference function.*
 
 The models (`.pth` and `.pkl`) and scaling functions were saved locally via `joblib` to be easily portable.
@@ -105,15 +105,15 @@ To justify the architectural choices, an ablation study was conducted to analyze
 * **Without Dropout:** Removing the regularization layers leads to faster learning but predisposes the model to overfitting.
 * **LR = 0.01:** Massively increasing the learning rate causes severe instability in the optimizer (visible on the Loss curves).
 
-![Test1](Test1.png)
+![Test1](Proiect_SI_NN/Test1.png)
 *Figure 13: Graphical comparison for the lack of Dropout and increased LR.*
 
 ### Variant 2 (Optimized)
 We built a much simpler model (`Input -> 64 -> 32 -> Num_classes`), without Dropout and with a faster LR (`0.005`).
 
-![Test2_1](Test2_1.png)
+![Test2_1](Proiect_SI_NN/Test2_1.png)
 
-![Test2_2](Test2_2.png)
+![Test2_2](Proiect_SI_NN/Test2_2.png)
 *Figure 14: Training curves and Confusion Matrix obtained with the simplified MLP variant.*
 
 Although it trains faster, the lack of Dropout and parameter reduction slightly affected the detection of highly minority classes, proving that the initially chosen complex architecture is optimal.
